@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중국어 성조 & 한자 암기 퀴즈</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 3D 카드 뒤집기 애니메이션 스타일 효과 */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-200">
+
+    <div id="home-view" class="container mx-auto px-4 max-w-md flex-grow flex flex-col justify-center items-center py-12">
+        <div class="text-center mb-10 animate-fade-in">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Vibe Coding Project</span>
+            <h1 class="text-3xl font-extrabold text-stone-900 tracking-tight">중국어 성조 & 한자<br><span class="text-emerald-600">암기 마스터</span></h1>
+            <p class="text-stone-500 mt-2 text-sm">전공 수업부터 HSK 자격증까지 한 번에!</p>
+        </div>
+
+        <div class="w-full space-y-4">
+            <button onclick="switchView('flashcard-view'); initFlashcard();" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 text-lg">
+                <i class="fa-solid fa-layer-group"></i> 1단계: 단어장 학습 시작
+            </button>
+            <button onclick="switchView('quiz-view'); startQuiz();" class="w-full py-4 bg-white hover:bg-stone-100 text-stone-800 font-bold rounded-2xl shadow-sm border border-stone-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 text-lg">
+                <i class="fa-solid fa-graduation-cap text-emerald-500"></i> 2단계: 성조 퀴즈 도전
+            </button>
+        </div>
+        
+        <div class="mt-12 text-center text-xs text-stone-400">
+            <p>© 2026 중국어문학 전공 학습 에이전트</p>
+        </div>
+    </div>
+
+    <div id="flashcard-view" class="container mx-auto px-4 max-w-md flex-grow hidden flex-col justify-between py-6">
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="switchView('home-view')" class="text-stone-500 hover:text-stone-800 text-sm flex items-center gap-1">
+                    <i class="fa-solid fa-chevron-left"></i> 홈으로
+                </button>
+                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-stone-200 text-xs shadow-sm">
+                    <input type="checkbox" id="filter-review" onchange="toggleFilter(this)" class="accent-emerald-600 h-4 w-4 rounded">
+                    <label for="filter-review" class="font-medium text-stone-600 cursor-pointer">'몰라요' 단어만 보기</label>
+                </div>
+            </div>
+            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden mb-6">
+                <div id="flashcard-progress" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="flex-grow flex items-center justify-center my-4">
+            <div id="flashcard-container" class="w-full h-72 perspective-1000 cursor-pointer" onclick="flipCard()">
+                <div id="flashcard" class="w-full h-full transform-style-3d transition-transform duration-500 relative bg-white rounded-3xl shadow-sm border border-stone-200 flex items-center justify-center">
+                    <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-6 text-center">
+                        <span class="text-xs text-stone-400 mb-4 tracking-widest"><i class="fa-solid fa-eye"></i> 터치해서 뒤집기</span>
+                        <h2 id="card-hanzi" class="text-6xl font-bold text-stone-900 tracking-wide">学习</h2>
+                    </div>
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 bg-emerald-50 rounded-3xl border-2 border-emerald-300 flex flex-col items-center justify-center p-6 text-center">
+                        <span class="text-xs text-emerald-600 font-bold mb-2">정답 확인</span>
+                        <h3 id="card-pinyin" class="text-3xl font-bold text-emerald-700 mb-2">xuéxí</h3>
+                        <p id="card-meaning" class="text-xl text-stone-600">공부하다</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            <button onclick="classifyWord(false)" class="py-3.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors">
+                <i class="fa-solid fa-circle-xmark"></i> 몰라요 (Red)
+            </button>
+            <button onclick="classifyWord(true)" class="py-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors">
+                <i class="fa-solid fa-circle-check"></i> 알아요 (Green)
+            </button>
+        </div>
+    </div>
+
+    <div id="quiz-view" class="container mx-auto px-4 max-w-md flex-grow hidden flex-col justify-between py-6">
+        <div>
+            <div class="flex justify-between items-center mb-3">
+                <span id="quiz-progress-txt" class="text-sm font-semibold text-stone-500">문제 1 / 10</span>
+                <div class="bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-lg text-sm border border-emerald-200">
+                    Score: <span id="quiz-score">0</span>
+                </div>
+            </div>
+            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden mb-6">
+                <div id="timer-bar" class="bg-amber-500 h-full transition-all duration-1000 linear" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-stone-200 p-8 text-center my-4 flex-grow flex flex-col items-center justify-center relative">
+            <div id="quiz-feedback" class="absolute inset-0 bg-white/90 rounded-3xl flex flex-col items-center justify
